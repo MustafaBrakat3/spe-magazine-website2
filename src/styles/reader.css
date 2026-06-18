@@ -254,6 +254,17 @@
   background: linear-gradient(to left, transparent 85%, rgba(0, 0, 0, 0.08) 93%, rgba(0, 0, 0, 0.22) 100%);
 }
 
+/* Remove inner spine shadow when showing only the cover or back cover (single page view on desktop) */
+.book-container.show-cover .my-page.stf__right::after,
+.book-container.show-cover .my-page.--right::after {
+  background: none;
+}
+
+.book-container.show-back-cover .my-page.stf__left::after,
+.book-container.show-back-cover .my-page.--left::after {
+  background: none;
+}
+
 .my-page img {
   width: 100%;
   height: 100%;
@@ -274,6 +285,7 @@
   position: relative;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  z-index: 2; /* Ensure it stays above the reader-container vignette shadow */
 }
 
 .single-page-canvas-wrapper {
