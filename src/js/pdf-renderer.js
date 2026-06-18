@@ -67,7 +67,7 @@ export class PDFRenderer {
 
     // Set CSS size so the canvas appears at the desired size but with extra pixels for sharpness
     canvas.style.width = `${viewport.width / effectiveDpr}px`;
-    canvas.style.height = `${viewport.height / effectiveDpr}px`;
+    canvas.style.height = 'auto';
 
     await page.render({ canvasContext: ctx, viewport }).promise;
     page.cleanup();
