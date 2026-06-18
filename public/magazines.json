@@ -1,0 +1,54 @@
+[
+  {
+    "id": "spe-2025-annual",
+    "title": "SPE Cairo Annual Magazine",
+    "subtitle": "Pioneering the Future of Energy",
+    "year": 2025,
+    "date": "2025-06-01",
+    "description": "Our latest edition explores the cutting edge of petroleum engineering, featuring student research, industry insights, and the chapter's proudest achievements of the year.",
+    "cover": "/covers/cover-2025.jpg",
+    "pdf": "/magazines/2025/spe-magazine-2025.pdf",
+    "pages": 48,
+    "featured": true,
+    "tags": ["Annual", "Research", "Energy Transition"]
+  },
+  {
+    "id": "spe-2024-annual",
+    "title": "SPE Cairo Annual Magazine",
+    "subtitle": "Engineering Tomorrow's Energy",
+    "year": 2024,
+    "date": "2024-06-01",
+    "description": "A deep dive into sustainable energy solutions, student competitions, and the impact of AI on the petroleum industry.",
+    "cover": "/covers/cover-2024.jpg",
+    "pdf": "/magazines/2024/spe-magazine-2024.pdf",
+    "pages": 42,
+    "featured": false,
+    "tags": ["Annual", "Sustainability", "AI"]
+  },
+  {
+    "id": "spe-2023-annual",
+    "title": "SPE Cairo Annual Magazine",
+    "subtitle": "Drilling into the Future",
+    "year": 2023,
+    "date": "2023-06-01",
+    "description": "Highlighting breakthroughs in drilling technology, environmental stewardship, and inspiring stories from our chapter members.",
+    "cover": "/covers/cover-2023.jpg",
+    "pdf": "/magazines/2023/spe-magazine-2023.pdf",
+    "pages": 36,
+    "featured": false,
+    "tags": ["Annual", "Drilling", "Technology"]
+  },
+  {
+    "id": "spe-2022-annual",
+    "title": "SPE Cairo Annual Magazine",
+    "subtitle": "Fueling Innovation",
+    "year": 2022,
+    "date": "2022-06-01",
+    "description": "Our inaugural digital edition celebrating innovation, competition victories, and the spirit of petroleum engineering at Cairo University.",
+    "cover": "/covers/cover-2022.jpg",
+    "pdf": "/magazines/2022/spe-magazine-2022.pdf",
+    "pages": 32,
+    "featured": false,
+    "tags": ["Annual", "Innovation", "Competition"]
+  }
+]
