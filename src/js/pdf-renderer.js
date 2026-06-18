@@ -90,9 +90,9 @@ export class PDFRenderer {
     const page = await this.pdfDoc.getPage(pageNum);
     const unscaledViewport = page.getViewport({ scale: 1 });
 
-    // Always render at 2x minimum for quality
+    // Always render at 1.5x minimum for quality vs performance balance
     const baseScale = targetWidth / unscaledViewport.width;
-    const qualityMultiplier = 2;
+    const qualityMultiplier = 1.5;
     const renderScale = baseScale * qualityMultiplier;
 
     const viewport = page.getViewport({ scale: renderScale });
@@ -105,8 +105,8 @@ export class PDFRenderer {
     await page.render({ canvasContext: ctx, viewport }).promise;
     page.cleanup();
 
-    // Use PNG for better quality (vs JPEG which has compression artifacts)
-    const dataUrl = canvas.toDataURL('image/png');
+    // Use JPEG for massive performance gains in encoding time and memory usage
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
     return {
       dataUrl,
@@ -114,20 +114,6 @@ export class PDFRenderer {
       height: viewport.height,
       pageNum,
     };
-  }
-
-  /**
-   * Render all pages as high-quality data URLs for flipbook mode
-   */
-  async renderAllPagesAsImages(targetWidth, onProgress) {
-    if (!this.pdfDoc) throw new Error('PDF not loaded');
-    const pages = [];
-    for (let i = 1; i <= this.pageCount; i++) {
-      const pageData = await this.renderPageToDataUrl(i, targetWidth);
-      pages.push(pageData);
-      if (onProgress) onProgress(i, this.pageCount);
-    }
-    return pages;
   }
 
   /**

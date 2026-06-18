@@ -183,25 +183,60 @@ async function initFlipBookMode() {
   const availableWidth = container ? container.clientWidth - 120 : 1000;
   const targetImageWidth = Math.min(Math.max(availableWidth / 2, 400), 700);
 
-  // Render all pages as high-quality images (2x internal multiplier in renderer)
-  const pages = await pdfRenderer.renderAllPagesAsImages(targetImageWidth, (current, total) => {
-    const progress = 10 + (current / total) * 85;
-    updateLoading(`Rendering page ${current} of ${total}...`, progress);
-    if (loadingPageCount) loadingPageCount.textContent = `${current} / ${total} pages`;
-  });
+  // Render ONLY the first 4 pages immediately to get the user reading instantly
+  const initialPagesToRender = Math.min(4, totalPages);
+  const initialPages = [];
+
+  for (let i = 1; i <= initialPagesToRender; i++) {
+    const progress = 10 + (i / initialPagesToRender) * 85;
+    updateLoading(`Rendering page ${i} of ${totalPages}...`, progress);
+    if (loadingPageCount) loadingPageCount.textContent = `${i} / ${totalPages} pages`;
+
+    const pageData = await pdfRenderer.renderPageToDataUrl(i, targetImageWidth);
+    initialPages.push(pageData);
+  }
 
   updateLoading('Creating flip book...', 95);
-  await createFlipBook(pages, aspectRatio);
+  await createFlipBook(initialPages, aspectRatio, targetImageWidth);
+
+  // Start rendering remaining pages silently in the background
+  if (totalPages > initialPagesToRender) {
+    startBackgroundRendering(initialPagesToRender + 1, totalPages, targetImageWidth);
+  }
 
   updateLoading('Ready!', 100);
   setTimeout(() => {
     if (readerLoading) readerLoading.classList.add('hidden');
     if (bookContainer) bookContainer.style.display = 'flex';
-  }, 500);
+  }, 300);
 }
 
-async function createFlipBook(pages, aspectRatio) {
-  if (!bookContainer || pages.length === 0) return;
+async function startBackgroundRendering(startPage, endPage, targetImageWidth) {
+  for (let i = startPage; i <= endPage; i++) {
+    // If the component was unmounted or user left the page, stop rendering
+    if (!pdfRenderer || !pageFlip) break;
+
+    try {
+      const pageData = await pdfRenderer.renderPageToDataUrl(i, targetImageWidth);
+      const img = document.getElementById(`page-img-${i}`);
+      if (img) {
+        img.src = pageData.dataUrl;
+      }
+      const spinner = document.getElementById(`spinner-${i}`);
+      if (spinner) {
+        spinner.style.display = 'none'; // Hide the loading spinner once image is loaded
+      }
+    } catch (err) {
+      console.warn(`Failed to background render page ${i}`, err);
+    }
+
+    // Crucial: yield to the main thread so animations and page flips stay buttery smooth
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+}
+
+async function createFlipBook(initialPages, aspectRatio, targetImageWidth) {
+  if (!bookContainer || totalPages === 0) return;
 
   const container = document.getElementById('readerContainer');
   const availableWidth = container.clientWidth - 120;
@@ -218,27 +253,38 @@ async function createFlipBook(pages, aspectRatio) {
   // Clear container
   bookContainer.innerHTML = '';
 
-  // Create page elements
-  pages.forEach((page, index) => {
+  // Create all page elements including unrendered placeholders
+  for (let i = 1; i <= totalPages; i++) {
     const pageDiv = document.createElement('div');
     pageDiv.className = 'my-page';
+
     // First and last pages are hard covers
-    if (index === 0 || index === pages.length - 1) {
+    if (i === 1 || i === totalPages) {
       pageDiv.setAttribute('data-density', 'hard');
     } else {
       pageDiv.setAttribute('data-density', 'soft');
     }
 
-    // Create an img element for the page
     const img = document.createElement('img');
-    img.src = page.dataUrl;
+    img.id = `page-img-${i}`;
     img.style.width = '100%';
     img.style.height = '100%';
     img.style.objectFit = 'contain';
 
+    if (i <= initialPages.length) {
+      img.src = initialPages[i - 1].dataUrl;
+    } else {
+      // 1x1 transparent GIF placeholder
+      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      // Add a small subtle spinner for lazy-loading pages
+      pageDiv.innerHTML += `<div class="lazy-spinner" id="spinner-${i}" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; z-index: -1;">
+        <div class="reader-loading-icon" style="width: 28px; height: 28px; opacity: 0.5;"></div>
+      </div>`;
+    }
+
     pageDiv.appendChild(img);
     bookContainer.appendChild(pageDiv);
-  });
+  }
 
   pageFlip = new PageFlip(bookContainer, {
     width: Math.floor(pageWidth),
