@@ -1,5 +1,5 @@
 /* ================================================
-   Reader Page — Optimized & Fixed
+   Reader Page — FIXED CENTERING
    ================================================ */
 
 .reader-page {
@@ -113,7 +113,7 @@
   background: #030712;
 }
 
-/* ✅ FIXED: Lighter vignette */
+/* FIXED: Lighter vignette or remove */
 .reader-container::before {
   content: '';
   position: absolute;
@@ -121,19 +121,23 @@
   background: radial-gradient(circle at center, transparent 70%, rgba(2, 4, 8, 0.15) 100%);
   pointer-events: none;
   z-index: 1;
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
-/* ✅ FIXED: No more translateX offset */
+/* ================================================
+   FLIPBOOK CONTAINER — FIXED CENTERING
+   ================================================ */
+
 .book-container {
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 2;
+  /* FIXED: No transform offset */
 }
 
-/* ✅ Shadow under book only */
+/* Shadow under book */
 .book-container::after {
   content: '';
   position: absolute;
@@ -147,7 +151,13 @@
   pointer-events: none;
 }
 
-/* ✅ Center the flipbook */
+/* FIXED: No more translateX offset for cover */
+.book-container.show-cover,
+.book-container.show-back-cover {
+  transform: none !important;
+}
+
+/* Center the flipbook */
 .book-container .stf__parent {
   margin: 0 auto !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -204,7 +214,58 @@
   object-fit: contain;
 }
 
-/* Navigation Arrows */
+/* ================================================
+   SINGLE PAGE VIEWER
+   ================================================ */
+.single-page-viewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-zoom;
+  /* Native pinch zoom */
+}
+
+.single-page-canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  padding: 16px;
+  margin: auto;
+}
+
+.single-page-canvas-wrapper canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  image-rendering: auto;
+}
+
+.single-page-viewer.zoomed {
+  overflow: auto;
+  cursor: grab;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.single-page-viewer.zoomed .single-page-canvas-wrapper canvas {
+  max-width: none !important;
+}
+
+.single-page-viewer.zoomed:active {
+  cursor: grabbing;
+}
+
+/* ================================================
+   NAVIGATION ARROWS
+   ================================================ */
 .nav-arrow {
   position: absolute;
   top: 50%;
@@ -249,7 +310,9 @@
   right: 24px;
 }
 
-/* Bottom Bar */
+/* ================================================
+   BOTTOM BAR
+   ================================================ */
 .reader-bottom-bar {
   display: flex;
   justify-content: center;
@@ -307,7 +370,75 @@
   cursor: pointer;
 }
 
-/* Responsive */
+/* ================================================
+   LOADING
+   ================================================ */
+.reader-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #050810;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+
+.reader-loading.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.reader-loading-icon {
+  width: 64px;
+  height: 64px;
+  position: relative;
+}
+
+.reader-loading-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.reader-loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.reader-loading-progress {
+  width: 240px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.reader-loading-progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  transition: width 0.3s;
+}
+
+.reader-loading-page-count {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
 @media (max-width: 768px) {
   .reader-toolbar {
     height: 48px;
@@ -349,5 +480,12 @@
   .nav-arrow {
     width: 36px;
     height: 36px;
+  }
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

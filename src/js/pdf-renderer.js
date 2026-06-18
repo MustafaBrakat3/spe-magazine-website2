@@ -1,11 +1,9 @@
 // ================================================
-// PDF Renderer — HiDPI / Retina Quality
-// Uses Mozilla PDF.js with devicePixelRatio-aware rendering
+// PDF Renderer — Optimized Quality (Lower for Speed)
 // ================================================
 
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.mjs',
   import.meta.url
@@ -18,56 +16,46 @@ export class PDFRenderer {
     this.pageCount = 0;
   }
 
-  /**
-   * Load the PDF document
-   */
   async loadDocument() {
     const loadingTask = pdfjsLib.getDocument({
       url: this.pdfUrl,
       cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/cmaps/',
       cMapPacked: true,
+      // OPTIMIZED: Disable auto-fetch for large PDFs
+      disableAutoFetch: true,
     });
     this.pdfDoc = await loadingTask.promise;
     this.pageCount = this.pdfDoc.numPages;
     return this.pageCount;
   }
 
-  /**
-   * Render a single page to a canvas element at a given scale.
-   * This uses the FULL device pixel ratio for crisp rendering on HiDPI screens.
-   * 
-   * @param {number} pageNum - 1-indexed page number
-   * @param {number} cssWidth - desired CSS pixel width of the output
-   * @returns {{ canvas: HTMLCanvasElement, width: number, height: number }}
-   */
   async renderPageToCanvas(pageNum, cssWidth = 600) {
     if (!this.pdfDoc) throw new Error('PDF not loaded');
 
     const page = await this.pdfDoc.getPage(pageNum);
     const unscaledViewport = page.getViewport({ scale: 1 });
 
-    // The CSS scale makes the page fit the desired width
     const cssScale = cssWidth / unscaledViewport.width;
 
-    // The DPR multiplier ensures sharp rendering on Retina / HiDPI displays
+    // OPTIMIZED: Cap DPR to 2 (was 3) for better performance
     const dpr = window.devicePixelRatio || 1;
-    // Clamp DPR to avoid excessive memory usage on very high DPI devices
-    const effectiveDpr = Math.min(dpr, 3);
+    const effectiveDpr = Math.min(dpr, 2); // Lower cap for speed
 
-    // The actual rendering scale = cssScale * devicePixelRatio
     const renderScale = cssScale * effectiveDpr;
     const viewport = page.getViewport({ scale: renderScale });
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Set the canvas backing store to the full resolution
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
-    // Set CSS size so the canvas appears at the desired size but with extra pixels for sharpness
     canvas.style.width = `${viewport.width / effectiveDpr}px`;
     canvas.style.height = `${viewport.height / effectiveDpr}px`;
+
+    // White background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     await page.render({ canvasContext: ctx, viewport }).promise;
     page.cleanup();
@@ -80,19 +68,16 @@ export class PDFRenderer {
     };
   }
 
-  /**
-   * Render page to a high-quality data URL (for flipbook images).
-   * Uses a higher base scale (2x minimum) regardless of device.
-   */
+  // OPTIMIZED: Lower quality multiplier for flipbook images
   async renderPageToDataUrl(pageNum, targetWidth = 800) {
     if (!this.pdfDoc) throw new Error('PDF not loaded');
 
     const page = await this.pdfDoc.getPage(pageNum);
     const unscaledViewport = page.getViewport({ scale: 1 });
 
-    // Always render at 2x minimum for quality
     const baseScale = targetWidth / unscaledViewport.width;
-    const qualityMultiplier = 2;
+    // OPTIMIZED: 1.5x instead of 2x for faster rendering
+    const qualityMultiplier = 1.5;
     const renderScale = baseScale * qualityMultiplier;
 
     const viewport = page.getViewport({ scale: renderScale });
@@ -102,11 +87,15 @@ export class PDFRenderer {
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
+    // White background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     await page.render({ canvasContext: ctx, viewport }).promise;
     page.cleanup();
 
-    // Use PNG for better quality (vs JPEG which has compression artifacts)
-    const dataUrl = canvas.toDataURL('image/png');
+    // OPTIMIZED: JPEG instead of PNG for smaller size (0.85 quality)
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
     return {
       dataUrl,
@@ -116,9 +105,6 @@ export class PDFRenderer {
     };
   }
 
-  /**
-   * Render all pages as high-quality data URLs for flipbook mode
-   */
   async renderAllPagesAsImages(targetWidth, onProgress) {
     if (!this.pdfDoc) throw new Error('PDF not loaded');
     const pages = [];
@@ -130,9 +116,6 @@ export class PDFRenderer {
     return pages;
   }
 
-  /**
-   * Get base page dimensions (unscaled)
-   */
   async getPageDimensions() {
     if (!this.pdfDoc) throw new Error('PDF not loaded');
     const page = await this.pdfDoc.getPage(1);
