@@ -161,7 +161,6 @@
 .single-page-canvas-wrapper canvas {
   max-width: 100%;
   height: auto;
-  box-shadow: var(--shadow-xl);
   border-radius: 4px;
   /* Let the canvas be as sharp as possible */
   image-rendering: auto;
