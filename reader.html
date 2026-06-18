@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Reading — SPE Cairo University Magazine</title>
+  <meta name="description" content="Read SPE Cairo University magazine in an interactive flip book experience.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script type="module" crossorigin src="/assets/reader-DZkeMuoD.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/theme-hAYmXFac.js">
+  <link rel="stylesheet" crossorigin href="/assets/theme-BidlzePW.css">
+  <link rel="stylesheet" crossorigin href="/assets/reader-BoqnvShc.css">
+</head>
+<body>
+
+  <div class="reader-page" id="readerPage">
+    <!-- Toolbar -->
+    <div class="reader-toolbar">
+      <div class="reader-toolbar-left">
+        <button class="reader-back-btn" id="backBtn" onclick="history.back()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Back
+        </button>
+        <span class="reader-title" id="readerTitle">Loading...</span>
+      </div>
+
+      <div class="reader-toolbar-center">
+        <div class="reader-page-info" id="pageInfo">
+          Page <span class="current-page" id="currentPageNum">-</span> of <span id="totalPageNum">-</span>
+        </div>
+      </div>
+
+      <div class="reader-toolbar-right">
+        <button class="toolbar-btn" id="zoomOutBtn" title="Zoom Out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+        </button>
+        <button class="toolbar-btn" id="zoomInBtn" title="Zoom In">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+        </button>
+        <div class="toolbar-separator"></div>
+        <button class="toolbar-btn" id="fullscreenBtn" title="Fullscreen (F)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+        <button class="toolbar-btn" id="downloadBtn" title="Download PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <div class="toolbar-separator"></div>
+        <button class="toolbar-btn" id="keyboardHintsBtn" title="Keyboard Shortcuts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.001"/><path d="M10 8h.001"/><path d="M14 8h.001"/><path d="M18 8h.001"/><path d="M8 12h.001"/><path d="M12 12h.001"/><path d="M16 12h.001"/><path d="M7 16h10"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Reader Container -->
+    <div class="reader-container" id="readerContainer">
+      <!-- Loading Screen -->
+      <div class="reader-loading" id="readerLoading">
+        <div class="reader-loading-icon"></div>
+        <div class="reader-loading-text" id="loadingText">Preparing your magazine...</div>
+        <div class="reader-loading-progress">
+          <div class="reader-loading-progress-bar" id="loadingProgressBar"></div>
+        </div>
+        <div class="reader-loading-page-count" id="loadingPageCount"></div>
+      </div>
+
+      <!-- Book will be inserted here by JS -->
+      <div id="bookContainer" class="book-container" style="display: none;"></div>
+
+      <!-- Single page viewer for mobile -->
+      <div id="singlePageViewer" class="single-page-viewer" style="display: none;">
+        <div class="single-page-canvas-wrapper" id="singlePageWrapper"></div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <button class="nav-arrow nav-arrow-prev" id="prevBtn" title="Previous Page (←)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button class="nav-arrow nav-arrow-next" id="nextBtn" title="Next Page (→)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="reader-bottom-bar">
+      <div class="page-slider-container">
+        <span class="page-slider-label" id="sliderLabelStart">1</span>
+        <input type="range" class="page-slider" id="pageSlider" min="0" max="1" value="0" step="1">
+        <span class="page-slider-label" id="sliderLabelEnd">1</span>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts -->
+    <div class="keyboard-hints" id="keyboardHints">
+      <div class="keyboard-hint"><kbd>←</kbd> <kbd>→</kbd> Navigate pages</div>
+      <div class="keyboard-hint"><kbd>Space</kbd> Next page</div>
+      <div class="keyboard-hint"><kbd>F</kbd> Fullscreen</div>
+      <div class="keyboard-hint"><kbd>Esc</kbd> Exit fullscreen</div>
+    </div>
+  </div>
+
+</body>
+</html>
