@@ -578,8 +578,8 @@
    ================================================ */
 @media (max-width: 768px) {
   .reader-toolbar {
-    height: 48px;
-    padding: 0 var(--space-md);
+    height: 52px;
+    padding: 0 var(--space-sm);
   }
 
   .reader-title {
@@ -608,7 +608,8 @@
   }
 
   .keyboard-hints,
-  .toolbar-separator {
+  .toolbar-separator,
+  #keyboardHintsBtn {
     display: none;
   }
 }
@@ -616,6 +617,20 @@
 @media (max-width: 480px) {
   .reader-toolbar-center {
     display: none;
+  }
+
+  .reader-back-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .reader-back-btn span {
+    display: none; /* Only show icon on extremely small screens */
+  }
+
+  .toolbar-btn {
+    width: 32px;
+    height: 32px;
   }
 
   .nav-arrow {
