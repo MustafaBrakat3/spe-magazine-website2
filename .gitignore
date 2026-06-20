@@ -1,21 +1,4 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# Node
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor
-.vscode/*
-!.vscode/extensions.json
-.idea
+node_modules/
+dist/
+.env
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
