@@ -186,7 +186,7 @@ body::after {
   transition: transform var(--transition-fast);
 }
 .nav-brand:hover .nav-logo { transform: scale(1.05); }
-.nav-logo svg { width: 100%; height: 100%; }
+.nav-logo svg, .nav-logo img { width: 100%; height: 100%; object-fit: contain; }
 .nav-title { font-family: var(--font-heading); font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
 .nav-title .accent { color: var(--accent-primary-light); }
 
